@@ -10,7 +10,7 @@ Screen 2 :  SCP depuis Windows.
 Screen 3 :  ls -l /tmp/test.txt et cat sur la VM.
 
 3. Tunnels SSH (redirection de port local)
-J’ai créé un tunnel SSH local pour accéder au port 80 de la VM depuis Windows (ssh -L 8080:localhost:80 vboxuser@127.0.0.1 -p 2222). Cela permet d’accéder à un service distant non exposé directement. Le test curl http://localhost:8080 a renvoyé la page Nginx.
+J’ai crée un tunnel SSH local pour accéder au port 80 de la VM depuis Windows (ssh -L 8080:localhost:80 vboxuser@127.0.0.1 -p 2222). ça permet d’accéder à un service distant non exposé directement. Le test curl http://localhost:8080 a renvoyé la page Nginx.
 
 Screen 4 : commande tunnel SSH active.
 Screen 5 : curl http://localhost:8080 avec page Nginx.
@@ -28,7 +28,7 @@ Screen 8 : sudo nginx -t syntax OK.
 Screen 9 : curl http://localhost:8080 avec <h1>Mon site OK</h1>.
 
 6. HTTPS et certificats SSL/TLS
-J’ai généré un certificat auto-signé avec openssl req -x509 (valide 365 jours). J’ai modifié la config Nginx pour écouter sur 443 ssl avec les fichiers .crt et .key, et ajouté un bloc 80 qui redirige vers HTTPS (return 301 https://$host$request_uri;). Test config et reload réussis.
+J’ai généré un certificat auto signé avec openssl req -x509 (valide 365 jours). J’ai modifié la config Nginx pour écouter sur 443 ssl avec les fichiers .crt et .key, et ajouté un bloc 80 qui redirige vers HTTPS (return 301 https://$host$request_uri;). Test config et reload réussis.
 
 Screen 10 : génération certificat openssl prompts.
 Screen 11 : sudo nginx -t après config HTTPS.
