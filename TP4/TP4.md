@@ -1,12 +1,12 @@
 TP4
 
 1. Analyse des logs SSH
-J’ai commencé par me connecter en SSH à la VM via port forwarding VirtualBox (ssh vboxuser@127.0.0.1 -p 2222). J’ai ensuite vérifié les logs de connexion SSH dans /var/log/auth.log pour voir les connexions réussies et tentatives échouées. Cela permet de détecter des attaques par force brute ou des problèmes d’authentification.
+J’ai commencé par me connecter en SSH à la VM via port forwarding VirtualBox (ssh vboxuser@127.0.0.1 -p 2222). J’ai ensuite vérifie les logs de connexion SSH dans /var/log/auth.log pour voir les connexion réussies et tentative échouees. Cela permet de détecter des attaques par force brute ou des problèmes d’authentification.
 
 <img src=image/screen1.png>
 
 2. Transfert de fichiers sécurisés
-Pour le transfert, j’ai créé un fichier test.txt sur Windows et je l’ai envoyé vers la VM avec SCP via le port 2222 (scp -P 2222 test.txt vboxuser@127.0.0.1:/tmp/) Sur la VM, j’ai vérifié l’arrivée du fichier avec ls -l et cat. ça montre le fonctionnement de SCP par dessus SSH.
+Pour le transfert, j’ai créé un fichier test.txt sur Windows et je l’ai envoyé vers la VM avec SCP via le port 2222 (scp -P 2222 test.txt vboxuser@127.0.0.1:/tmp/) Sur la VM j’ai vérifié l’arrivée du fichier avec ls -l et cat. ça montre le fonctionnement de SCP par dessus SSH.
 
 <img src=image/screen2.png>
 <img src=image/screen3.png>
@@ -23,29 +23,37 @@ J’ai installé Nginx (sudo apt install nginx) et vérifié qu’il tournait (s
 <img src=image/screen6.png>
 <img src=image/screen7.png>
 
-5. Configuration Nginx HTTP (site statique)
-J’ai créé un dossier web /srv/mon-site/html avec une page index.html, puis un server block dans /etc/nginx/sites-available/mon-site. J’ai activé le site avec un lien symbolique vers sites-enabled, supprimé le site default, testé la config (nginx -t) et rechargé (systemctl reload nginx). Le site est maintenant accessible via le tunnel.
+5. Analyse des logs et sécurité (Fail2Ban)
+j’ai commencé par suivre en direct les logs d’authentification pour voir ce qui se passe quand on se connecte en SSH. j’ai lancé sudo tail -f /var/log/auth.log et on voit apparaître les lignes Accepted password quand la connexion marche et Failed password quand on se trompe.
+Ensuite j’ai installé Fail2Ban pour protéger le serveur contre les tentatives de brute force sur SSH. Fail2Ban lit les logs (ici /var/log/auth.log) et si une IP fait trop d’échecs  il la bannit pendant un certain temps (bantime).
+pour le test j’ai fait plusieurs tentatives de connexion SSH avec un mauvais mot de passe depuis ma machine. Après quelques essais Fail2Ban a bien détecté les échecs et a banni l’IP je l’ai vérifié avec fail2ban-client status sshd qui affiche la liste des IP bannies, et on peut aussi retrouver les “Ban” dans /var/log/fail2ban.log.
+<img src=image/fail2ban2.png>
+<img src=image/fail2ban3.png>
+<img src=image/preuve2ban.png>
+
+6. Configuration Nginx HTTP (site statique)
+J’ai créé un dossier web /srv/mon-site/html avec une page index.html puis un server block dans /etc/nginx/sites-available/mon-site. J’ai activé le site avec un lien symbolique vers sites-enabled, supprimé le site default, testé la config (nginx -t) et rechargé (systemctl reload nginx). Le site est maintenant accesssible via le tunnel.
 
 <img src=image/screen8.png>
 <img src=image/screen9.png>
 
-6. HTTPS et certificats SSL/TLS
+7. HTTPS et certificats SSL/TLS
 J’ai généré un certificat auto signé avec openssl req -x509 (valide 365 jours). J’ai modifié la config Nginx pour écouter sur 443 ssl avec les fichiers .crt et .key, et ajouté un bloc 80 qui redirige vers HTTPS (return 301 https://$host$request_uri;). Test config et reload réussis.
 
 <img src=image/screen10.png>
 <img src=image/screen11.png>
 
-7. Test HTTPS via tunnel SSH
+8. Test HTTPS via tunnel SSH
 J’ai créé un tunnel pour le port 443 (ssh -L 8443:localhost:443) et testé avec curl -k https://localhost:8443 (le -k ignore l’avertissement certificat auto-signé). Le site s’affiche bien en HTTPS, prouvant le chiffrement TLS.
 
 <img src=image/screen13.png>
 
-8. Firewall et sécurité (UFW)
+9. Firewall et sécurité (UFW)
 J’ai installé UFW (sudo apt install ufw), autorisé les ports SSH (22), HTTP (80) et HTTPS (443), activé le firewall (ufw enable) et vérifié le statut. Seuls les ports nécessaires sont ouverts, les autres sont bloqués par défaut.
 
 <img src=image/screen14.png>
 
-9. Vérification finale des logs
+10. Vérification finale des logs
 Pour finir, j’ai vérifié les logs Nginx (access.log) pour les requêtes web et auth.log pour les connexions SSH. Tout est cohérent avec les tests effectués.
 
 <img src=image/screen15.png>
