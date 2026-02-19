@@ -1,3 +1,5 @@
+TP4
+
 1. Analyse des logs SSH
 J’ai commencé par me connecter en SSH à la VM via port forwarding VirtualBox (ssh vboxuser@127.0.0.1 -p 2222). J’ai ensuite vérifié les logs de connexion SSH dans /var/log/auth.log pour voir les connexions réussies et tentatives échouées. Cela permet de détecter des attaques par force brute ou des problèmes d’authentification.
 
