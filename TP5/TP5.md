@@ -291,3 +291,12 @@ Non surtout pas c'est tout l'interet de la DMZ. On met des regles de pare feu tr
 Le LAN peut-il accéder librement à la DMZ ?
 Oui en general le LAN a le droit d'aller vers la DMZ pour que les dev puissent mettre a jour le site web par exemple. Vu que le pare feu est "stateful" il laisse passer la connexion dans un sens et il autorise juste la reponse a revenir dans l'autre sens.
 
+
+15. Filtrage MAC
+Le filtrage MAC est-il réellement sécurisé ?
+Non le filtrage par adresse MAC c'est pas consideré comme une mesure de securité fiable. C'est tout au plus une petite barrière administrative pour empêcher les utilisateurs honnete  de brancher n'importe quel appareil sur le réseau.
+​
+
+Pourquoi est-il facilement contournable ?
+Il est très facile à contourner parce que les adresses MAC circulent  sur le réseau (non chiffrées). Un attaquant n'a qua écouter le trafic réseau avec un logiciel comme Wireshark ou Airodump-ng pour capturer l'adresse MAC d'un appareil autorise qui communique avec le routeur. Après il lui suffit de modifier sa propre adresse MAC  via les parametres de son système d'exploitation ou avec un outil comme macchanger sous Linux, pour se faire passer pour l'appareil légitime et entrer sur le réseau.
+​
